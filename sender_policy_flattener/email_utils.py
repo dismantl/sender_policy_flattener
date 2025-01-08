@@ -1,13 +1,11 @@
 # coding=utf-8
 import smtplib
-
 from difflib import HtmlDiff
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from email import utils
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from sender_policy_flattener.formatting import format_records_for_email
-
 
 _email_style = """
     <style type="text/css">
@@ -76,8 +74,7 @@ def email_changes(
     email.attach(html)
 
     try:
-        mailserver = smtplib.SMTP()
-        mailserver.connect(server)
+        mailserver = smtplib.SMTP_SSL(server)
 
         # Verify the from address
         if not mailserver.verify(fromaddr):
