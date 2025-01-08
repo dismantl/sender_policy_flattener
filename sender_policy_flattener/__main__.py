@@ -4,8 +4,9 @@ This helps to avoid exceeding the DNS lookup limit of the Sender Policy Framewor
 https://tools.ietf.org/html/rfc7208#section-4.6.4
 """
 
-import json
 import argparse
+import json
+
 import sender_policy_flattener
 
 
@@ -32,7 +33,7 @@ def parse_arguments():
 
     parser.add_argument(
         "-e",
-        "-mailserver",
+        "--mailserver",
         dest="mailserver",
         help="Server to use for mailing alerts",
         default=None,
@@ -41,7 +42,7 @@ def parse_arguments():
 
     parser.add_argument(
         "-t",
-        "-to",
+        "--to",
         dest="toaddr",
         help="Recipient address for email alert",
         default=None,
@@ -50,7 +51,7 @@ def parse_arguments():
 
     parser.add_argument(
         "-f",
-        "-from",
+        "--from",
         dest="fromaddr",
         help="Sending address for email alert",
         default=None,
@@ -59,7 +60,7 @@ def parse_arguments():
 
     parser.add_argument(
         "-p",
-        "-pass",
+        "--pass",
         dest="password",
         help="Password for sending address",
         default=None,
@@ -68,7 +69,7 @@ def parse_arguments():
 
     parser.add_argument(
         "-s",
-        "-subject",
+        "--subject",
         dest="subject",
         help="Subject string, must contain {zone}",
         default=None,
@@ -77,7 +78,7 @@ def parse_arguments():
 
     parser.add_argument(
         "-u",
-        "-update_subject",
+        "--update_subject",
         dest="update_subject",
         help="Update subject string, must contain {zone}",
         default=None,

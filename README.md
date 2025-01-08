@@ -2,7 +2,7 @@
 
 We had a problem in our organisation that caused our SPF records to become invalid:
 
-When customers computers were querying our SPF records, there were more than 10 lookups required after following all of the ``include:`` remarks.
+When customers computers were querying our SPF records, there were more than 10 lookups required after following all of the `include:` remarks.
 
 Solution? Query them ourselves, and create a much more condense list of SPF records.
 
@@ -35,27 +35,32 @@ pip install sender_policy_flattener
 
 ```shell
 usage: spflat [-h] [-c CONFIG] [-r RESOLVERS] [-e MAILSERVER] [-t TOADDR]
-              [-f FROMADDR] [-p PASSWORD] [-s SUBJECT] [-D SENDING_DOMAIN]
-              [-d DOMAINS] [-o OUTPUT]
+              [-f FROMADDR] [-p PASSWORD] [-s SUBJECT] [-u UPDATE_SUBJECT]
+              [-D SENDING_DOMAIN] [-d DOMAINS] [-o OUTPUT]
+              [--update-records] [--force-update] [--no-email]
 
 A script that crawls and compacts SPF records into IP networks. This helps to
 avoid exceeding the DNS lookup limit of the Sender Policy Framework (SPF)
 https://tools.ietf.org/html/rfc7208#section-4.6.4
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -c CONFIG, --config CONFIG
                         Name/path of JSON configuration file
   -r RESOLVERS, --resolvers RESOLVERS
                         Comma separated DNS servers to be used
-  -e MAILSERVER, -mailserver MAILSERVER
+  -e MAILSERVER, --mailserver MAILSERVER
                         Server to use for mailing alerts
-  -t TOADDR, -to TOADDR
+  -t TOADDR, --to TOADDR
                         Recipient address for email alert
-  -f FROMADDR, -from FROMADDR
+  -f FROMADDR, --from FROMADDR
                         Sending address for email alert
-  -s SUBJECT, -subject SUBJECT
+  -p PASSWORD, --pass PASSWORD
+                        Password for sending address
+  -s SUBJECT, --subject SUBJECT
                         Subject string, must contain {zone}
+  -u UPDATE_SUBJECT, --update_subject UPDATE_SUBJECT
+                        Update subject string, must contain {zone}
   -D SENDING_DOMAIN, --sending-domain SENDING_DOMAIN
                         The domain which emails are being sent from
   -d DOMAINS, --domains DOMAINS
@@ -64,6 +69,9 @@ optional arguments:
                         statements.
   -o OUTPUT, --output OUTPUT
                         Name/path of output file
+  --update-records      Update SPF records in CloudFlare
+  --force-update        Force an update of SPF records in Cloudflare
+  --no-email            don't send the email
 ```
 
 Example
@@ -85,7 +93,7 @@ spflat --config spf.json
 
 You can specify a config file, or you can specify all of the optional arguments from the command line.
 
-I've provided a ``settings.json`` file with an example configuration file.
+I've provided a `settings.json` file with an example configuration file.
 
 ## Supported Python versions
 
@@ -93,8 +101,8 @@ See the latest result of the build: <https://github.com/cetanu/sender_policy_fla
 
 ## 3rd party dependencies
 
-* netaddr
-* dnspython
+- netaddr
+- dnspython
 
 ## Example email format
 
