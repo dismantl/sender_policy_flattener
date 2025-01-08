@@ -1,16 +1,17 @@
 # coding=utf-8
 import hashlib
 import sys
-from netaddr import IPSet, IPNetwork, AddrFormatError
+
+from netaddr import AddrFormatError, IPNetwork, IPSet
 
 
 def wrap_in_spf_tokens(domain, ipv4blocks, last_record):
     for spf_num, spf_set in enumerate(ipv4blocks):
         spf_set = " ".join(spf_set)
         if spf_num == last_record:
-            spfrecord = "v=spf1 {0} ~all".format(spf_set)
+            spfrecord = '"v=spf1 {0} ~all"'.format(spf_set)
         else:
-            spfrecord = "v=spf1 {0} include:spf{1}.{2} ~all".format(
+            spfrecord = '"v=spf1 {0} include:spf{1}.{2} ~all"'.format(
                 spf_set, spf_num + 1, domain
             )
         yield spfrecord
@@ -76,7 +77,7 @@ def ips_to_spf_strings(ips):
 def spf_record_len(addresses):
     quote_allowance = '" "' * (len(addresses) // 4)
     return sys.getsizeof(
-        "v=spf1 {addresses} {quotes} include:spf1.example.domain.com ~all".format(
+        '"v=spf1 {addresses} {quotes} include:spf1.example.domain.com ~all"'.format(
             addresses=" ip4:".join(addresses), quotes=quote_allowance
         )
     )
