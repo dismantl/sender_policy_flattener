@@ -1,4 +1,6 @@
-FROM python:alpine AS base
+# Keep this runtime aligned with pyproject.toml. The digest prevents an
+# unattended image refresh from changing Python or the base distribution.
+FROM python:3.12.14-slim-bookworm@sha256:782412e85d0f0984994c290652577d4018aff08145c85b262bb63dc0c7522254 AS base
 
 ENV  POETRY_VERSION=1.8.5 \
   PYTHONUNBUFFERED=1 \
@@ -25,7 +27,7 @@ WORKDIR $PYSETUP_PATH
 COPY ./poetry.lock ./pyproject.toml ./
 
 RUN --mount=type=cache,target=$POETRY_HOME/pypoetry/cache \
-  poetry install --no-dev
+  poetry install --only main --no-root
 
 
 FROM base AS production

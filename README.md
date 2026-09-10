@@ -97,7 +97,8 @@ I've provided a `settings.json` file with an example configuration file.
 
 ## Supported Python versions
 
-See the latest result of the build: <https://github.com/cetanu/sender_policy_flattener/actions>
+Python 3.12 is supported. See the latest test and container-build results in
+[GitHub Actions](https://github.com/dismantl/sender_policy_flattener/actions).
 
 ## 3rd party dependencies
 
