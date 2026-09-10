@@ -1,8 +1,8 @@
 # Keep this runtime aligned with pyproject.toml. The digest prevents an
 # unattended image refresh from changing Python or the base distribution.
-FROM python:3.12.14-slim-bookworm@sha256:782412e85d0f0984994c290652577d4018aff08145c85b262bb63dc0c7522254 AS base
+FROM python:3.14.3-slim-bookworm@sha256:f21c0d5a44c56805654c15abccc1b2fd576c8d93aca0a3f74b4aba2dc92510e2 AS base
 
-ENV  POETRY_VERSION=1.8.5 \
+ENV  POETRY_VERSION=2.4.3 \
   PYTHONUNBUFFERED=1 \
   PYTHONDONTWRITEBYTECODE=1 \
   PIP_NO_CACHE_DIR=off \

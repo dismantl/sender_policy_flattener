@@ -97,7 +97,7 @@ I've provided a `settings.json` file with an example configuration file.
 
 ## Supported Python versions
 
-Python 3.12 is supported. See the latest test and container-build results in
+Python 3.12 through 3.14 are supported. See the latest test and container-build results in
 [GitHub Actions](https://github.com/dismantl/sender_policy_flattener/actions).
 
 ## 3rd party dependencies
