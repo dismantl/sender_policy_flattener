@@ -18,6 +18,8 @@ def wrap_in_spf_tokens(domain, ipv4blocks, last_record):
 
 
 def format_rrecord_value_for_bind(spfrec):
+    if spfrec.startswith('"') and spfrec.endswith('"'):
+        spfrec = spfrec[1:-1]
     spfrec = spfrec.split()
     yield "( "
     while spfrec:

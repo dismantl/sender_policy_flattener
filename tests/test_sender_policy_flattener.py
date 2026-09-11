@@ -21,8 +21,8 @@ from sender_policy_flattener.handlers import (
 )
 
 mocked_dns_object = "sender_policy_flattener.crawler.resolver.Resolver.resolve"
-expected_hash = "cf2cf4be379e18b13fb8552102ddffa3bf9666658a3f279b3512d72b51e724c1"
-expected_large_hash = "10183d16d6f23f8f270130801d270ed4d345dcb3ad77dd51fa10949c9e25e61a"
+expected_hash = "997b8ac8e3e76b1651c71341003e96c6dcb5839bb7196b6ba3850c68320c7a7d"
+expected_large_hash = "edfc23aae0f7be5b38ca178a5e61e30266c3208c207b5ce5ab55ffdd12acfbba"
 
 
 def MockDNSQuery(*args, **kwargs):

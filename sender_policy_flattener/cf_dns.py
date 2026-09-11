@@ -85,7 +85,7 @@ class CFzone:
     def delete(self,rid):
         """ Delete a DNS record """
 
-        r = self._cf.zones.dns_records.delete(dns_record_id=rid, zone_id=self.zoneid)
+        r = self._cf.dns.records.delete(dns_record_id=rid, zone_id=self.zoneid)
         return r.id
 
 
@@ -136,7 +136,12 @@ class CFrec:
 
         fqdn = name if name.endswith(self.zonename) else f'{name}.{self.zonename}'
 
-        return self.zone.create({'name': fqdn, 'type': self.type, 'content': contents})
+        return self.zone.create({
+            'name': fqdn,
+            'type': self.type,
+            'ttl': self.ttl,
+            'content': contents,
+        })
         
 
     def get(self, name):
@@ -146,9 +151,9 @@ class CFrec:
 
         r =  self.zone.get({'name': fqdn, 'type': self.type, 'match': 'all'})
 
-        recs = len(r)
+        recs = len(r.result)
         if recs == 1:
-            return r[0]['content']
+            return r.result[0].content
         elif recs == 0:
             return None
         else:
