@@ -1,6 +1,6 @@
 # coding=utf-8
 import unittest
-from unittest.mock import patch
+from unittest.mock import call, patch
 from sender_policy_flattener import flatten
 from sender_policy_flattener.crawler import crawl, spf2ips, default_resolvers
 from sender_policy_flattener.email_utils import email_changes
@@ -230,6 +230,57 @@ class SenderPolicyFlattenerTests(unittest.TestCase):
             "test.com": {"records": expected_records, "sum": expected_large_hash}
         }
         self.assertEqual(expected, actual)
+
+    @patch(mocked_dns_object, side_effect=MockDNSQuery)
+    @patch("sender_policy_flattener.TXTrec")
+    def test_update_without_baseline_only_establishes_baseline(self, txtrec, resolve):
+        actual = flatten(
+            input_records={"test.com": {"test.com": "txt", "mx.test.com": "a"}},
+            dns_servers=["8.8.8.8"],
+            email_server="mocked",
+            email_subject="{zone} has changed",
+            update_subject="{zone} has been updated",
+            fromaddress="mocked",
+            password="mocked",
+            toaddress="mocked",
+            update=True,
+            email=False,
+        )
+
+        expected_records = spf2ips({"test.com": "txt", "mx.test.com": "a"}, "test.com")
+        expected = {"test.com": {"records": expected_records, "sum": expected_hash}}
+        self.assertEqual(expected, actual)
+        txtrec.assert_not_called()
+
+    @patch(mocked_dns_object, side_effect=MockDNSQuery)
+    @patch("sender_policy_flattener.TXTrec")
+    def test_force_update_without_baseline_updates_records(self, txtrec, resolve):
+        txtrec.return_value.update.return_value = True
+
+        actual = flatten(
+            input_records={"test.com": {"test.com": "txt", "mx.test.com": "a"}},
+            dns_servers=["8.8.8.8"],
+            email_server="mocked",
+            email_subject="{zone} has changed",
+            update_subject="{zone} has been updated",
+            fromaddress="mocked",
+            password="mocked",
+            toaddress="mocked",
+            force_update=True,
+            email=False,
+        )
+
+        expected_records = spf2ips({"test.com": "txt", "mx.test.com": "a"}, "test.com")
+        expected = {"test.com": {"records": expected_records, "sum": expected_hash}}
+        self.assertEqual(expected, actual)
+        txtrec.assert_called_once_with("test.com")
+        self.assertEqual(
+            [
+                call(f"spf{i}.test.com", record, addok=True)
+                for i, record in enumerate(expected_records)
+            ],
+            txtrec.return_value.update.call_args_list,
+        )
 
     @patch(mocked_dns_object, side_effect=MockDNSQuery)
     @patch("sender_policy_flattener.email_utils.smtplib", side_effect=MockSmtplib)

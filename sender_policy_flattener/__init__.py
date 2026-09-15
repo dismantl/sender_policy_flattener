@@ -38,17 +38,21 @@ def flatten(
         records = spf2ips(spf_targets, domain, resolver)
         hashsum = sequence_hash(records)
         current[domain] = {"records": records, "sum": hashsum}
-        if lastresult.get(domain, False) and current.get(domain, False):
-            previous_sum = lastresult[domain]["sum"]
+        previous_result = lastresult.get(domain)
+        mismatch = False
+        if previous_result:
+            previous_sum = previous_result["sum"]
             current_sum = current[domain]["sum"]
             mismatch = previous_sum != current_sum
             if mismatch:
-                print(f'\n***WARNING: SPF changes detected for sender domain {domain}\n')
+                print(
+                    f"\n***WARNING: SPF changes detected for sender domain {domain}\n"
+                )
             else:
-                print(f'\nNO SPF changes detected for sender domain {domain}\n')
-        
-            if mismatch and email:                
-                print(f'Sending mis-match details email for sender domain {domain}')
+                print(f"\nNO SPF changes detected for sender domain {domain}\n")
+
+            if mismatch and email:
+                print(f"Sending mis-match details email for sender domain {domain}")
                 if update or force_update:
                     thesubject = update_subject
                 else:
@@ -63,18 +67,20 @@ def flatten(
                     password=password,
                     toaddr=toaddress,
                 )
-            if (mismatch and update) or force_update:
-                cfzone = TXTrec(domain)
-                numrecs = len(records)
-                print(f'\n**** Updating {numrecs} SPF Records for domain {domain}\n')        
-                for i in range(0,numrecs):
-                    recname = f'spf{i}.{domain}'
-                    print(f'===> Updating {recname} TXT record..', end='')
-                    if cfzone.update(recname, records[i],addok=True):
-                        print('..Successfully updated\n')
-                    else:
-                        print(f'Failed!\n\n********** WARNING: Update of {recname} TXT record Failed\n')
-            
+
+        if (mismatch and update) or force_update:
+            cfzone = TXTrec(domain)
+            numrecs = len(records)
+            print(f"\n**** Updating {numrecs} SPF Records for domain {domain}\n")
+            for i in range(numrecs):
+                recname = f"spf{i}.{domain}"
+                print(f"===> Updating {recname} TXT record..", end="")
+                if cfzone.update(recname, records[i], addok=True):
+                    print("..Successfully updated\n")
+                else:
+                    print(
+                        f"Failed!\n\n********** WARNING: Update of {recname} TXT record Failed\n"
+                    )
 
     return current if update or force_update or len(lastresult) == 0 else lastresult
 
