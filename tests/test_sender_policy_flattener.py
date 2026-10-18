@@ -1,6 +1,10 @@
 # coding=utf-8
 import unittest
-from unittest.mock import call, patch
+from unittest.mock import Mock, call, patch
+
+import dns.rdata
+import dns.rdataclass
+import dns.rdatatype
 from sender_policy_flattener import flatten
 from sender_policy_flattener.crawler import crawl, spf2ips, default_resolvers
 from sender_policy_flattener.email_utils import email_changes
@@ -300,3 +304,19 @@ class SenderPolicyFlattenerTests(unittest.TestCase):
         self.assertEqual(actual.count("("), actual.count("IN TXT"))
         self.assertEqual(actual.count(")"), actual.count("IN TXT"))
         self.assertEqual(expected_final_email, actual)
+
+
+def txt(text):
+    return dns.rdata.from_text(dns.rdataclass.IN, dns.rdatatype.TXT, text)
+
+
+def test_crawl_joins_txt_strings_split_inside_a_mechanism():
+    resolver = Mock()
+    resolver.resolve.return_value = [
+        txt('"v=spf1 ip4:192.0.2.1 ip" "4:198.51.100.7 ~all"'),
+        txt('"unrelated-verification=abc"'),
+    ]
+
+    ips = [str(ip) for ip in crawl("split.example", "txt", "example.com", resolver)]
+
+    assert ips == ["192.0.2.1", "198.51.100.7"]

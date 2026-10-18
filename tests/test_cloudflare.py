@@ -58,6 +58,18 @@ def test_zone_record_operations_use_the_dns_records_api(mock_cloudflare):
     )
 
 
+@patch("sender_policy_flattener.cf_dns.Cloudflare")
+def test_zone_list_all_iterates_the_auto_paginating_result(mock_cloudflare):
+    client = cloudflare_client()
+    records = [SimpleNamespace(id="one"), SimpleNamespace(id="two")]
+    client.dns.records.list.return_value = iter(records)
+    mock_cloudflare.return_value = client
+    zone = CFzone("mail.example.com")
+
+    assert list(zone.list_all({"type": "TXT"})) == records
+    client.dns.records.list.assert_called_once_with(zone_id="zone-id", type="TXT")
+
+
 def test_record_reads_and_creates_against_page_results():
     zone = Mock(zonename="example.com")
     zone.get.return_value = SimpleNamespace(

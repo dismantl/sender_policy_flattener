@@ -60,6 +60,12 @@ class CFzone:
         return r
 
 
+    def list_all(self, params={}):
+        """ Yield matching resource records across every result page """
+
+        yield from self._cf.dns.records.list(zone_id=self.zoneid, **params)
+
+
     def getid(self,params={}):
         """ Return a specific resource record values: id, proxied, ttl """
 
@@ -158,6 +164,12 @@ class CFrec:
             return None
         else:
             raise Exception("Multiple records found")
+
+
+    def all(self):
+        """ Return every resource record of this type in the zone """
+
+        return list(self.zone.list_all({'type': self.type}))
 
 
     def rem(self, name):
