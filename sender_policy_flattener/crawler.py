@@ -26,13 +26,25 @@ def spf2ips(records, domain, resolvers=default_resolvers):
     return [record for record in wrap_in_spf_tokens(domain, ipv4blocks, last_record)]
 
 
+def rdata_to_text(rdata):
+    """Render an answer as text, reassembling TXT records split into strings.
+
+    RFC 7208 section 3.3: the strings of a TXT record are concatenated with no
+    separator, so a mechanism may be split mid-token (`"ip" "4:192.0.2.1"`).
+    """
+    strings = getattr(rdata, "strings", None)
+    if strings is None:
+        return str(rdata)
+    return b"".join(strings).decode("utf-8", errors="replace")
+
+
 def crawl(rrname, rrtype, domain, ns=default_resolvers):
     try:
         answers = ns.resolve(from_text(rrname), rrtype)
     except Exception as err:
         print(repr(err), rrname, rrtype)
     else:
-        answer = " ".join([str(a) for a in answers])
+        answer = " ".join([rdata_to_text(a) for a in answers])
 
         # Special handling for a records
         if (rrtype == "a") and not list(tokenize(answer)):
